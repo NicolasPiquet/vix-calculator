@@ -1,0 +1,8 @@
+# Normalize line endings to LF on commit
+* text=auto eol=lf
+
+# Ensure Python files always use LF
+*.py text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.csv text eol=lf

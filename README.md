@@ -19,8 +19,8 @@ This project computes a VIX-style implied volatility index from an options chain
 For each expiration term:
 
 1. Find strike K* that minimizes |Call(K*) - Put(K*)|
-2. Compute forward: **F = K* + e^(rT) × (Call(K*) - Put(K*))**
-3. ATM strike: **K₀ = max{K : K ≤ F}**
+2. Compute forward: `F = K* + exp(rT) × (Call(K*) - Put(K*))`
+3. ATM strike: `K₀ = max{K : K ≤ F}`
 
 ### 2. Option Selection Q(K)
 
@@ -65,7 +65,7 @@ where:
 ## Key Assumptions & Differences from Official VIX
 
 | Aspect | Official VIX (SPX) | This Implementation |
-|--------|-------------------|---------------------|
+|:-------|:-------------------|:--------------------|
 | Price source | Live bid-ask midpoint | Settlement prices (priorSettle) |
 | Underlying | S&P 500 options | Commodity options (configurable) |
 | Zero-bid rule | 2 consecutive zero bids | 2 consecutive zero settles |
@@ -100,8 +100,15 @@ cd vix-calculator
 
 # Create virtual environment (recommended)
 python -m venv venv
-venv\Scripts\activate  # Windows
-# source venv/bin/activate  # Unix
+
+# Activate (Windows PowerShell)
+.\venv\Scripts\Activate.ps1
+
+# Activate (Windows cmd)
+venv\Scripts\activate.bat
+
+# Activate (Unix/macOS)
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -187,7 +194,7 @@ options["tradeDate"] = pd.to_datetime(options["tradeDate"])
 options["futures-updated"] = pd.to_datetime(options["futures-updated"])
 rates["Date"] = pd.to_datetime(rates["Date"])
 
-# Calculate VIX
+# Calculate VIX (90-day horizon)
 result = vix_index(
     options_df=options,
     rates_df=rates,
@@ -195,9 +202,9 @@ result = vix_index(
     options_id=1352,
     trade_date="2020-11-12",
     front_months=2,
-    rear_months=4,  # must bracket target_days
+    rear_months=4,
     target_days=90,
-    price_scale=100,  # scale factor to align units (dataset-dependent)
+    price_scale=100,  # dataset-dependent: aligns strike/price units
 )
 
 print(f"VIX: {result['vix']:.2f}")
