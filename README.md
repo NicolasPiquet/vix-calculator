@@ -8,8 +8,10 @@ This project computes a VIX-style implied volatility index from an options chain
 
 **Key Features:**
 - CBOE-aligned variance swap replication formula
-- Two expirations bracketing the target maturity (30 days by default)
-- Support for different underlying assets
+- Two expirations bracketing the target maturity (configurable)
+- Adaptable to any asset class (equity, FX, commodities)
+- Variance swap pricing and forward volatility extraction
+- Interactive demo notebook with visualizations
 - Clean, tested, desk-ready code
 
 ## Mathematical Methodology
@@ -79,15 +81,15 @@ where:
 vix-calculator/
 ├── src/
 │   ├── __init__.py
-│   └── vix_index.py      # Core calculation module
+│   ├── vix_index.py      # Core VIX calculation
+│   └── pricing.py        # Variance swap pricing & Greeks
 ├── tests/
 │   ├── __init__.py
 │   └── test_vix_index.py # Unit tests
 ├── data/                  # Place CSV files here
-│   └── .gitkeep
+├── demo.ipynb             # Interactive demo notebook
 ├── run.py                 # Entry point
 ├── requirements.txt
-├── .gitignore
 └── README.md
 ```
 
@@ -237,6 +239,43 @@ tests/test_vix_index.py::TestBuildQK::test_k0_included_once PASSED
 | `expiration_day_offset` | Business day from month-end | 4 |
 | `target_days` | Target maturity for interpolation | 30 |
 | `price_scale` | Scale factor to align strike and option price units (dataset-dependent) | 1.0 |
+
+## Demo Notebook
+
+The `demo.ipynb` notebook provides interactive visualizations:
+
+- **Variance term structure** - σ(T) across maturities
+- **Q(K) distribution** - OTM option prices by strike
+- **Variance swap P&L** - payoff scenarios
+- **Forward volatility** - extraction from term structure
+
+```bash
+jupyter notebook demo.ipynb
+```
+
+## Variance Swap Pricing
+
+The `src/pricing.py` module provides:
+
+```python
+from src.pricing import variance_swap_fair_strike, vix_forward
+
+# Fair variance strike = σ² from VIX
+k_var = variance_swap_fair_strike(result['sigma2_1'])
+
+# Forward volatility between two maturities
+fwd_vol = vix_forward(sigma2_1, sigma2_2, T1, T2, T_start, T_end)
+```
+
+## Adapting to Other Asset Classes
+
+This implementation works with any options data following the required schema:
+
+- **Equity indices** (SPX, SX5E, NKY)
+- **FX options** (EUR/USD, USD/JPY)
+- **Commodity options** (crude oil, natural gas, gold)
+
+Adjust `price_scale` based on your data's strike/price units.
 
 ## References
 
