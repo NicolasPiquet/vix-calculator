@@ -27,6 +27,9 @@ build/
 .coverage
 htmlcov/
 
+# mypy
+.mypy_cache/
+
 # Output files
 *.log
 output/
